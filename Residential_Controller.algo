@@ -33,6 +33,7 @@ SEQUENCE CallElevator (Direction, Floor)
     CALL ActivateButton (Direction, Floor) 
     CALL FindElevator (Direction, Floor) RETURNING Elevator 
     CALL RequestElevator (Elevator, Floor) 
+    CALL OperateElevator (Elevator)
 END SEQUENCE
 
 SEQUENCE ActivateButton (Direction, Floor)
@@ -103,8 +104,9 @@ SEQUENCE FindElevator (Direction, Floor)
     END WHILE
 END SEQUENCE 
 
-SEQUENCE OperateElevator (Elevator, RequestedFloor)
+SEQUENCE OperateElevator (Elevator)
     READ RequestedFloor FROM FloorList
+    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
     IF CurrentFloor IS RequestedFloor THEN 
         CALL OpenDoor (Elevator)
     IF CurrentFloor > RequestedFloor THEN
@@ -116,7 +118,7 @@ END SEQUENCE
 
 SEQUENCE RequestElevator (Elevator, RequestedFloor)
     ADD RequestedFloor TO FloorList 
-    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
+    **CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
     CALL SortFloorList (FloorList) RETURNING SortedFloorList
     SET FloorList TO SortedFloorList
 END SEQUENCE
@@ -135,7 +137,7 @@ SEQUENCE OpenDoor (Elevator)
     CALL CloseDoor (Elevator)
 END SEQUENCE
 
-SEQUENCE Obstructed
+SEQUENCE Obstructed (Elevator)
    READ Captor FROM door
    IF Obstructed
       RETURN TRUE
@@ -143,7 +145,7 @@ SEQUENCE Obstructed
 END SEQUENCE
 
 
-SEQUENCE Overweight
+SEQUENCE Overweight (Elevator)
    READ Weight FROM Balance
    IF Weight > MaxWeight THEN
       RETURN TRUE
@@ -157,7 +159,7 @@ SEQUENCE CloseDoor (Elevator)
       CALL OpenDoor (Elevator)
   END WHILE
   CALL CloseDoor
-  CALL OperateElevator (Elevator, RequestedFloor)
+  CALL OperateElevator (Elevator)
 END SEQUENCE
 
 END SEQUENCE
@@ -166,42 +168,13 @@ SEQUENCE MoveDown (Elevator, RequestedFloor)
     REPEAT 
         COMPUTE CurrentFloor = Floor - 1 
     UNTIL CurrentFloor IS Floor
-    CALL RequestElevator (Elevator, Floor)
+    CALL RequestElevator (Elevator, RequestedFloor)
 END SEQUENCE
 
 SEQUENCE MoveUp (Elevator, RequestedFloor)
     REPEAT 
         COMPUTE CurrentFloor = Floor + 1 
     UNTIL CurrentFloor IS Floor
-    CALL RequestElevator (Elevator, Floor)
+    CALL RequestElevator (Elevator, RequestedFloor)
 END SEQUENCE 
 
-**procedure bubbleSort( A : list of sortable items )
-    n = length(A)
-    repeat
-        newn = 0
-        for i = 1 to n-1 inclusive do
-            if A[i-1] > A[i] then
-                swap(A[i-1], A[i])
-                newn = i
-            end if
-        end for
-        n = newn
-    until n = 0
-end procedure
-
-De Nicolas : 
-procedure bubbleSort( A : list of sortable items )
-   n = length(A)
-   repeat
-       swapped = false
-       for i = 1 to n-1 inclusive do
-           /* if this pair is out of order */
-           if A[i-1] > A[i] then
-               /* swap them and remember something changed */
-               swap( A[i-1], A[i] )
-               swapped = true
-           end if
-       end for
-   until not swapped
-end procedure

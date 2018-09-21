@@ -1,30 +1,26 @@
-SEQUENCE CallBatteryElevator(Direction, Floor)
-   READ CustomerInput
-   CALL FindElevator(Direction, Floor)
-   CALL RequestFloor(Elevator, Floor)
-END SEQUENCE
-
-SEQUENCE FindElevator(Direction, Floor)
-   IF CustomerInput >= SS1 AND <= SS6 THEN
-
-   IF CustomerInput > 1 AND <= 20 THEN
-
-   IF CustomerInput >= 20 <= 40 THEN
-
-   IF CustomerInput >= 40 <= 60 THEN
-
-   END IF
-END SEQUENCE
+SEQUENCE Batterie (Floor)
+       FOR EACH column IN columns
+              IF Floor =< 1 THEN
+                CALL CallElevator (Direction, Floor, column)
+              IF Floor =< 20 AND >= 1 THEN
+                CALL CallElevator (Direction, Floor, column)
+              IF Floor =< 40 AND >= 1 THEN
+                CALL CallElevator (Direction, Floor, column)
+              IF Floor =< 60 and >= 1 THEN
+                CALL CallElevator (Direction, Floor, column)
+              END IF  
+       END FOR
+   END SEQUENCE
 
 
 
 
 
-
-SEQUENCE CallElevator (Direction, Floor) 
+SEQUENCE CallElevator (Direction, Floor, Column) 
     CALL ActivateButton (Direction, Floor) 
     CALL FindElevator (Direction, Floor) RETURNING Elevator 
     CALL RequestElevator (Elevator, Floor) 
+    CALL OperateElevator (Elevator)
 END SEQUENCE
 
 SEQUENCE ActivateButton (Direction, Floor)
@@ -95,8 +91,9 @@ SEQUENCE FindElevator (Direction, Floor)
     END WHILE
 END SEQUENCE 
 
-SEQUENCE OperateElevator (Elevator, RequestedFloor)
+SEQUENCE OperateElevator (Elevator)
     READ RequestedFloor FROM FloorList
+    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
     IF CurrentFloor IS RequestedFloor THEN 
         CALL OpenDoor (Elevator)
     IF CurrentFloor > RequestedFloor THEN
@@ -108,7 +105,7 @@ END SEQUENCE
 
 SEQUENCE RequestElevator (Elevator, RequestedFloor)
     ADD RequestedFloor TO FloorList 
-    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
+    **CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
     CALL SortFloorList (FloorList) RETURNING SortedFloorList
     SET FloorList TO SortedFloorList
 END SEQUENCE
@@ -127,14 +124,14 @@ SEQUENCE OpenDoor (Elevator)
     CALL CloseDoor (Elevator)
 END SEQUENCE
 
-SEQUENCE Obstructed
+SEQUENCE Obstructed (Elevator)
    READ Captor FROM door
    IF Obstructed
       RETURN TRUE
    ELSE RETURN FALSE
 END SEQUENCE
 
-SEQUENCE Overweight
+SEQUENCE Overweight (Elevator)
    READ Weight FROM Balance
    IF Weight > MaxWeight THEN
       RETURN TRUE
@@ -147,19 +144,19 @@ SEQUENCE CloseDoor (Elevator)
       CALL OpenDoor (Elevator)
   END WHILE
   CALL CloseDoor
-  CALL OperateElevator (Elevator, RequestedFloor)
+  CALL OperateElevator (Elevator)
 END SEQUENCE
 
 SEQUENCE MoveDown (Elevator, RequestedFloor)
     REPEAT 
         COMPUTE CurrentFloor = Floor - 1 
     UNTIL CurrentFloor IS Floor
-    CALL RequestElevator (Elevator, Floor)
+    CALL RequestElevator (Elevator, RequestedFloor)
 END SEQUENCE
 
 SEQUENCE MoveUp (Elevator, RequestedFloor)
     REPEAT 
         COMPUTE CurrentFloor = Floor + 1 
     UNTIL CurrentFloor IS Floor
-    CALL RequestElevator (Elevator, Floor)
+    CALL RequestElevator (Elevator, RequestedFloor)
 END SEQUENCE 
