@@ -93,7 +93,7 @@ END SEQUENCE
 
 SEQUENCE OperateElevator (Elevator)
     READ RequestedFloor FROM FloorList
-    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
+    CALL ActivateInsideButton (Elevator, CurrentFloor)
     IF CurrentFloor IS RequestedFloor THEN 
         CALL OpenDoor (Elevator)
     IF CurrentFloor > RequestedFloor THEN
@@ -105,7 +105,6 @@ END SEQUENCE
 
 SEQUENCE RequestElevator (Elevator, RequestedFloor)
     ADD RequestedFloor TO FloorList 
-    **CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
     CALL SortFloorList (FloorList) RETURNING SortedFloorList
     SET FloorList TO SortedFloorList
 END SEQUENCE
