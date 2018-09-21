@@ -1,0 +1,207 @@
+    1er cas de test
+    Elevator : RC, Number=1, stopped, idle
+    CallElevator(up,RC)
+
+    2ieme cas de test
+    Elevator : 2, Number=1, stopped, idle
+    CallElevator(up,RC)
+    
+    3ieme cas de test
+    Elevator :RC, Number=1, stopped, idle
+    CallElevator(up,2)
+    
+    4ieme cas de test
+    Elevators :[[RC, Number=1, stopped, idle],[RC, Number=2, stopped, idle]]
+    CallElevator(up,RC)
+    
+    5ieme cas de test
+    Elevators :[[2, Number=1, stopped, idle],[RC, Number=2, stopped, idle]]
+    CallElevator(up,2)
+
+    6ieme cas de test
+    Elevators :[[RC, Number=1, stopped, idle],[2, Number=2, stopped, idle]]
+    CallElevator(up,2)
+
+    7ieme cas de test
+    Elevators :[[RC, Number=1, stopped, idle],[2, Number=2, stopped, idle]]
+    CallElevator(up,3)
+
+    8ieme cas de test 
+    Elevators :
+
+SEQUENCE CallElevator (Direction, Floor) 
+    CALL ActivateButton (Direction, Floor) 
+    CALL FindElevator (Direction, Floor) RETURNING Elevator 
+    CALL RequestElevator (Elevator, Floor) 
+END SEQUENCE
+
+SEQUENCE ActivateButton (Direction, Floor)
+    CALL FindButton (Direction, Floor) RETURNING Button
+    SET Button Active 
+END SEQUENCE
+
+SEQUENCE FindButton (Direction, Floor) 
+    FOR EACH button IN Buttons 
+        IF Floor = ButtonFloor AND Direction = ButtonDirection 
+        THEN RETURN Button 
+    END FOR 
+END SEQUENCE 
+
+SEQUENCE DesactivateButton (DirectionElevator, CurrentFloor)
+    CALL FindButton (Direction, Floor) RETURNING Button
+    SET Button Inactive
+END SEQUENCE
+
+SEQUENCE FindActivateButton (Direction, Floor)
+   FOR EACH ActivateButton IN ActivateButtons
+       IF CurrentFloor = ActivateButtonFloor AND Direction = ActivateButtonDirection
+       THEN RETURN ActivateButton
+   END FOR
+END SEQUENCE
+
+SEQUENCE ActivateInsideButton (Direction, CurrentFloor)
+    CALL FindActivateInsideButton (Direction, Floor) RETURNING ActivateInsideButton
+    SET ActivateInsideButton Active 
+END SEQUENCE
+
+SEQUENCE FindActivateInsideButton (Elevator, CurrentFloor)
+       FOR EACH ActivateInsideButton IN ActivateInsideButtons
+           IF CurrentFloor = ActivateInsideButtonFloor THEN
+           RETURN ActivateInsideButton
+        END FOR
+   END SEQUENCE
+
+SEQUENCE DesactivateInsideButton (Elevator, CurrentFloor)
+  CALL FindActiveInsideButton (Elevator, CurrentFloor) RETURNING Button
+  SET Button Inactive
+END SEQUENCE
+
+SEQUENCE FindElevator (Direction, Floor) 
+    WHILE Elevator NOT Found
+        FOR EACH Elevator IN Elevators 
+            IF Floor IS CurrentFloor AND Status IS Stopped AND ElevatorDirection IS Direction THEN
+                   RETURN Elevator
+            ELSE
+            IF Floor IS CurrentFloor AND Status IS Idle THEN
+                   RETURN Elevator
+            ELSE
+            IF Floor > CurrentFloor AND ElevatorDirection IS GoingUp AND ElevatorDirection IS Direction THEN
+                   RETURN Elevator
+            ELSE
+            IF Floor < CurrentFloor AND ElevatorDirection IS GoingDown AND ElevatorDirection IS Direction THEN
+                   RETURN Elevator
+            ELSE
+            IF Floor < CurrentFloor AND ElevatorDirection IS GoingUp AND ElevatorDirection IS Direction THEN
+                   RETURN Elevator
+                   ELSE
+            IF Floor > CurrentFloor AND ElevatorDirection IS GoingDown AND ElevatorDirection IS Direction THEN
+                   RETURN Elevator
+            END IF
+        END FOR
+            READ Elevator WITH Shortest FloorList FROM Elevators 
+                   RETURN Elevator
+    END WHILE
+END SEQUENCE 
+
+SEQUENCE OperateElevator (Elevator, RequestedFloor)
+    READ RequestedFloor FROM FloorList
+    IF CurrentFloor IS RequestedFloor THEN 
+        CALL OpenDoor (Elevator)
+    IF CurrentFloor > RequestedFloor THEN
+        CALL MoveDown (Elevator, RequestedFloor)
+    IF CurrentFloor < RequestedFloor THEN
+        CALL MoveUp (Elevator, RequestedFloor)
+    END IF
+END SEQUENCE 
+
+SEQUENCE RequestElevator (Elevator, RequestedFloor)
+    ADD RequestedFloor TO FloorList 
+    CALL ActivateInsideButton (RequestedFloor, CurrentFloor)
+    CALL SortFloorList (FloorList) RETURNING SortedFloorList
+    SET FloorList TO SortedFloorList
+END SEQUENCE
+
+SEQUENCE SortFloorList (FloorList)
+    SORT FloorList BY Direction THEN RETURN FloorList
+END SEQUENCE
+
+SEQUENCE OpenDoor (Elevator)
+    CALL FindActivateButton (Direction, Floor) RETURNING ActivateButton
+    CALL DesactivateButton (ElevatorDirection, CurrentFloor)
+    REPEAT 
+        OpenDoor 
+        INIT Timer TO 5 Seconds 
+    UNTIL Door NOT Obstructed 
+    CALL CloseDoor (Elevator)
+END SEQUENCE
+
+SEQUENCE Obstructed
+   READ Captor FROM door
+   IF Obstructed
+      RETURN TRUE
+   ELSE RETURN FALSE
+END SEQUENCE
+
+
+SEQUENCE Overweight
+   READ Weight FROM Balance
+   IF Weight > MaxWeight THEN
+      RETURN TRUE
+   ELSE RETURN FALSE
+   END IF
+END SEQUENCE
+
+
+SEQUENCE CloseDoor (Elevator)
+  WHILE Obstructed OR Overweight
+      CALL OpenDoor (Elevator)
+  END WHILE
+  CALL CloseDoor
+  CALL OperateElevator (Elevator, RequestedFloor)
+END SEQUENCE
+
+END SEQUENCE
+
+SEQUENCE MoveDown (Elevator, RequestedFloor)
+    REPEAT 
+        COMPUTE CurrentFloor = Floor - 1 
+    UNTIL CurrentFloor IS Floor
+    CALL RequestElevator (Elevator, Floor)
+END SEQUENCE
+
+SEQUENCE MoveUp (Elevator, RequestedFloor)
+    REPEAT 
+        COMPUTE CurrentFloor = Floor + 1 
+    UNTIL CurrentFloor IS Floor
+    CALL RequestElevator (Elevator, Floor)
+END SEQUENCE 
+
+**procedure bubbleSort( A : list of sortable items )
+    n = length(A)
+    repeat
+        newn = 0
+        for i = 1 to n-1 inclusive do
+            if A[i-1] > A[i] then
+                swap(A[i-1], A[i])
+                newn = i
+            end if
+        end for
+        n = newn
+    until n = 0
+end procedure
+
+De Nicolas : 
+procedure bubbleSort( A : list of sortable items )
+   n = length(A)
+   repeat
+       swapped = false
+       for i = 1 to n-1 inclusive do
+           /* if this pair is out of order */
+           if A[i-1] > A[i] then
+               /* swap them and remember something changed */
+               swap( A[i-1], A[i] )
+               swapped = true
+           end if
+       end for
+   until not swapped
+end procedure
