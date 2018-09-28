@@ -3,21 +3,24 @@ namespace demoApp
 {
     class Column
     {
-        private int nbFloor;
-        private int nbElevators;
+        public int nbFloor;
+        public int nbElevators;
 
         public Column (int nbFloor, int nbElevators)
         {
             this.nbFloor = nbFloor;
             this.nbElevators = nbElevators;
             this.elevatorList = [];
+
+            for (var i =0; i < this.nbElevators; i++) 
+                var elevator = new Elevator
         
         }
     }
     class Button
     {
-       private int direction;
-       private int request_floor
+       public int direction;
+       public int request_floor
 
        public Button (int direction, int request_floor)
        {
@@ -30,7 +33,7 @@ namespace demoApp
 
     class InsideButton 
     {
-       private int floor;
+       public int floor;
        public InsideButton (int floor) 
        {
            this.floor = floor;
@@ -40,8 +43,8 @@ namespace demoApp
 
     class ElevatorController
     {
-       private int nbFloor;
-       private int nbElevators;
+       public int nbFloor;
+       public int nbElevators;
 
        public ElevatorController(int nbFloor, int nbElevators)
        {
@@ -50,23 +53,29 @@ namespace demoApp
        }
        public void RequestElevator(int FloorNumber, string Direction)
        {
+           var test = 1;
            Console.WriteLine("Request Elevator on floor " + FloorNumber.ToString() + ", going " + Direction);
        }
        public void RequestFloor(int FloorNumber, string Direction)
        {
            Console.WriteLine("Request Floor number " + FloorNumber.ToString() + ", going " + Direction);
        }
+
        public void FindElevator(int FloorNumber, string direction)
+       {
             var distanceFloor = 999;
             var selectedElevator = null;
             for(int i= 0; i< this.column.elevatorList.length; i++)
+            {
             var differenceFloor = Math.abs(FloorNumber - this.column.elevatorList[i].currentFloor);
 
-            if (differenceFloor < distanceFloor)
+            if (differenceFloor < distanceFloor){
                 distanceFloor = differenceFloor;
                 selectedElevator = this.column.elevatorList[i]
+            }
+            }
             return selectedElevator;
-       {
+       
            Console.WriteLine("FindElevator " + FloorNumber.ToString() + ", going " + direction);
        }
     }
@@ -74,8 +83,8 @@ namespace demoApp
     
     class Elevator
     {
-       private int elevatorNumber;
-       private int numberOfFloor;
+       public int elevatorNumber;
+       public int numberOfFloor;
 
         for ( int i =0; i < nbFloor; i++)
         {
