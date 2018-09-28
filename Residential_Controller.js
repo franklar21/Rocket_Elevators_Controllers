@@ -49,7 +49,7 @@ class ElevatorController {
         elevator.move_next();
 
     }
-    FindElevator(FloorNumber, direction) {
+    FindElevator(FloorNumber) {
         var distance_floor = 999;
         var selected_elevator = null;
         for (var i = 0; i < this.column.elevatorList.length; i++) {
@@ -166,44 +166,32 @@ class Elevator {
 const a = new ElevatorController(10,2);
 
 //scenario 1
-a.column.elevatorList[0].current_floor = 1;
-a.column.elevatorList[1].current_floor = 5;
-a.RequestElevator(2, 'Up')
-a.RequestFloor(a.column.elevatorList[0], 6)
+//a.column.elevatorList[0].current_floor = 1;
+//a.column.elevatorList[1].current_floor = 5;
+//a.RequestElevator(2, 'Up')
+//a.RequestFloor(a.column.elevatorList[0], 6)
 
 
 //scenario 2
-/*a.column.elevatorList[0].current_floor = 9;
-a.column.elevatorList[1].current_floor = 2;
+//a.column.elevatorList[0].current_floor = 9;
+//a.column.elevatorList[1].current_floor = 2;
 
-a.RequestElevator(0, 'Up')
-a.RequestFloor(a.column.elevatorList[1], 5)
+//a.RequestElevator(0, 'Up')
+//a.RequestFloor(a.column.elevatorList[1], 5)
 
-a.RequestElevator(2, 'Up')
-a.RequestFloor(a.column.elevatorList[1], 4)
+//a.RequestElevator(2, 'Up')
+//a.RequestFloor(a.column.elevatorList[1], 4)
 
-a.RequestElevator(8, 'Down')
-a.RequestFloor(a.column.elevatorList[0], 1)*/
+//a.RequestElevator(8, 'Down')
+//a.RequestFloor(a.column.elevatorList[0], 1)
 
 //Scenario 3
-/*a.column.elevatorList[0].current_floor = 9;
-a.column.elevatorList[1].current_floor = 2;
-a.RequestElevator(9, 'Down')
-a.RequestFloor(a.column.elevatorList[0], 2)
-a.RequestElevator(2, 'Down')
-a.RequestFloor(a.column.elevatorList[1], 1)*/
-
-
-  
-    
-
-
-
-
-
-
-
-
+// a.column.elevatorList[0].current_floor = 9;
+// a.column.elevatorList[1].current_floor = 2;
+//a.RequestElevator(9, 'Down')
+//a.RequestFloor(a.column.elevatorList[0], 2)
+//a.RequestElevator(2, 'Down')
+//a.RequestFloor(a.column.elevatorList[1], 1)
 
 
 
