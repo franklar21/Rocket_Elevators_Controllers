@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 namespace Rocket_Elevators_Controllers {
     class Program
@@ -18,7 +18,7 @@ namespace Rocket_Elevators_Controllers {
 		public Column(int nbFloor, int nbElevators) {
 			this.nbFloor = nbFloor;
 			this.nbElevators = nbElevators;
-			List <Elevator> elevatorsList = new List < Elevator > ();
+			List < Elevator > elevatorsList = new ElevatorController (10,2);
 			for (int i = 0; i < this.nbElevators; i++) {
 				elevatorsList.Add(new Elevator(i + 1, this.nbFloor));
 			}
@@ -30,6 +30,7 @@ namespace Rocket_Elevators_Controllers {
 		public Button(string direction, int requestFloor) {
 			this.direction = direction;
 			this.requestFloor = requestFloor;
+			this.activate_button = false;
 		}
 	}
 	class InsideButton {
@@ -50,11 +51,12 @@ namespace Rocket_Elevators_Controllers {
 			this.nbFloor = nbFloor;
 			this.nbElevators = nbElevators;
 			this.column = new Column(nbFloor, nbElevators);
+			this.button_list = new List < Button > ();
 		}
 		public void RequestElevator(int FloorNumber, string Direction) {
-			selectedElevator = this.FindElevator(FloorNumber);
-			selectedElevator = this.addFloorToList(FloorNumber);
-			selectedElevator = this.activateInsideButton(FloorNumber);
+			int selectedElevator = this.FindElevator(FloorNumber, Direction);
+			selectedElevator.addFloorToList(FloorNumber);
+			selectedElevator.activateInsideButton(FloorNumber);
 			Console.WriteLine("Request Elevator on floor " + FloorNumber.ToString() + ", going " + Direction);
 		}
 		public void RequestFloor(int Elevator, string Direction) {
@@ -82,9 +84,7 @@ namespace Rocket_Elevators_Controllers {
 	class Elevator {
 			public int elevatorNumber;
 			public int nbFloor;
-			public List < Button > buttonList;			
 			public string status;
-			public string direction;
 			public int current_floor;
 			public List < floor > floorList;
 			public Elevator(int elevatorNumber, int nbFloor) {
@@ -92,7 +92,7 @@ namespace Rocket_Elevators_Controllers {
 				this.direction = "NONE";
 				this.status = "idle";
 				this.floorList = new List < floor > ();
-				this.buttonList = buttonList.Add(new Button());
+				this.buttonList = buttonList.push(new Button());
 				for (int i = 0; i < nbFloor; i++) {
 					buttonList.push(new Button());
 				}
@@ -114,14 +114,14 @@ namespace Rocket_Elevators_Controllers {
 			public void moveDown(int FloorNumber) {
 				this.direction = "down";
 				this.status = "Moving";
-				Console.WriteLine("Elevator is going down");
+				console.writeLIne("Elevator is going down");
 
 				var interval = setInterval(() =>{
 					this.current_floor = this.current_floor - 1;
-					Console.WriteLine(this.current_floor);
+					console.writeLine(this.current_floor);
 					if (this.current_floor == FloorNumber) {
 						clearInterval(interval);
-						Console.WriteLine("Arrived at floor " + this.current_floor);
+						console.writeLine("Arrived at floor " + this.current_floor);
 						this.OpenDoor();
 					}
 				},
@@ -130,13 +130,13 @@ namespace Rocket_Elevators_Controllers {
 			public void moveUp(int FloorNumber) {
 				this.direction = "up";
 				this.status = "Moving";
-				Console.WriteLine("Elevator is going up");
+				console.writeLIne("Elevator is going up");
 				var interval = setInterval(() => {
 					this.current_floor = this.current_floor + 1;
-					Console.WriteLine(this.current_floor);
+					console.writeLine(this.current_floor);
 					if (this.current_floor == FloorNumber) {
 						clearInterval(interval);
-						Console.WriteLine("Arrived at floor " + this.current_floor);
+						console.writeLine("Arrived at floor " + this.current_floor);
 						this.OpenDoor();
 					}
 				},
@@ -146,16 +146,16 @@ namespace Rocket_Elevators_Controllers {
 				this.floor_list.push(FloorNumber);
 				if (this.direction == "up") {
 					this.floor_list.sort();
-					Console.WriteLine(this.floor_list);
+					console.writeLine(this.floor_list);
 				}
 				else if (this.direction == "down") {
 					this.floor_list.sort().reverse();
-					Console.writeLine(this.floor_list);
+					console.writeLine(this.floor_list);
 				}
 			}
 
 			public void OpenDoor() {
-				Console.WriteLine("Opening door on floor " + this.current_floor);
+				console.writeLine("Opening door on floor " + this.current_floor);
 				this.status = "open_door";
 				setTimeout(() => {
 					this.closeDoor();
@@ -164,7 +164,7 @@ namespace Rocket_Elevators_Controllers {
 			}
 
 			public void closeDoor() {
-				Console.WriteLine("Closing door");
+				console.writeLine("Closing door");
 				this.status = "close_door";
 				if (this.floor_list.Count() > 0) {
 					this.move_next();
@@ -172,7 +172,7 @@ namespace Rocket_Elevators_Controllers {
 			}
 
 			public void activateInsideButton(int FloorNumber) {
-				Console.WriteLine("Activated button at floor " + FloorNumber);
+				console.writeLine("Activated button at floor " + FloorNumber);
 				if (this.request_floor == this.floor_list) {
 					this.activate_InsideButton = false;
 				}
