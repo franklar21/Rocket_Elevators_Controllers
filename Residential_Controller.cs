@@ -20,12 +20,12 @@ namespace myApp
     class Button
     {
         public string direction;
-        public int requestFloor;
+        public int RequestFloor;
 
-        public Button (string direction, int requestFloor)
+        public Button (string direction, int RequestFloor)
         {
            this.direction = direction;
-           this.requestFloor = requestFloor;
+           this.RequestFloor = RequestFloor;
            this.activateButton = false;
         } 
     }
@@ -132,7 +132,7 @@ namespace myApp
            
            Console.WriteLine("MoveNext")
         }
-       static void MoveDown(int FloorNumber )
+       public void MoveDown(int FloorNumber )
        {
            this.direction = 'down'; 
            this.status = 'Moving';
@@ -148,8 +148,11 @@ namespace myApp
                     
            Console.WriteLine("MoveDown" + FloorNumber.ToString() )
        }
-       public void MoveUp(int FloorNumber )
-       this.direction = 'down'; 
+
+
+       public void MoveUp(int FloorNumber ) 
+       {
+       this.direction = 'Up'; 
            this.status = 'Moving';
            var interval = setInterval(() => {
             this.currentFloor = this.currentFloor + 1;
@@ -161,24 +164,48 @@ namespace myApp
             }
         }, 1000);
                    
-
-       {
            Console.WriteLine("MoveUp"+ FloorNumber.ToString)
        }
-       public void addFloorToList(int FloorNumber)
-       {
-           Console.WriteLine("addFloorToList" + FloorNumber.ToString() );
+
+        public void addFloorToList(int FloorNumber)
+        {
+           this.floorList.push(FloorNumber);
+           if (this.direction =="Up"){
+               this.floorList.sort().reverse();
+           }
+           else if (this.direction == "Down"){
+               this.floorList.Sort().reverse();
+           }
+           //Console.WriteLine("addFloorToList" + FloorNumber.ToString() );
        }
        public void OpenDoor()
-       {
-           Console.WriteLine("OpenDoor");
+        { 
+            this.status ='OpenDoor';
+            setTimeout(() => {
+            this.closeDoor();
+        }, 5000);
+        }
+            Console.WriteLine("OpenDoor");
        }
        public void CloseDoor()
        {
-           Console.WriteLine("CloseDoor");
+           this.status = 'CloseDoor';
+           if (this.floorList.Count > 0){
+               this.moveNext();
+           }
+       Console.WriteLine("CloseDoor");
        }
        public void activateInsideButton(int FloorNumber)
        {
+           if (this.RequestFloor == floorList){
+               this.activateInsideButton = false;
+           }
+           if (this.RequestFloor < floorList){
+               this.moveUp();
+           }
+           else if (this.RequestFloor > floorList){
+               this.moveDown();
+           }
            Console.WriteLine("activateInsideButton" + FloorNumber.ToString() );
        }
     }
