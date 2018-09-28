@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Timers;
 
 namespace Rocket_Elevators_Controllers {
     class Program
     {
+		
         static void Main(string[] args)
         {
             var elevatorController = new ElevatorController(10, 2);
@@ -87,6 +89,8 @@ namespace Rocket_Elevators_Controllers {
 	}
 
 	class Elevator {
+		Timer tmr = new Timer(); 
+
 			public int elevatorNumber;
 			public int nbFloor;
 			public List<InsideButton> buttonList;			
@@ -119,38 +123,33 @@ namespace Rocket_Elevators_Controllers {
 			}
 
 			public void moveDown(int FloorNumber) {
+					tmr.Interval = 1000;
 				this.direction = "down";
 				this.status = "Moving";
 				Console.WriteLine("Elevator is going down");
-
-				var interval = setInterval(() =>{
+				do{
 					this.current_floor = this.current_floor - 1;
 					Console.WriteLine(this.current_floor);
-					if (this.current_floor == FloorNumber) {
-						clearInterval(interval);
-						Console.WriteLine("Arrived at floor " + this.current_floor);
-						this.OpenDoor();
 					}
-				},
-				1000);
+					 while(this.current_floor > FloorNumber);
+				Console.WriteLine("Arrived at floor " + this.current_floor);
+						this.OpenDoor();
 			}
 			public void moveUp(int FloorNumber) {
 				this.direction = "up";
 				this.status = "Moving";
 				Console.WriteLine("Elevator is going up");
-				var interval = setInterval(() => {
-					this.current_floor = this.current_floor + 1;
-					Console.WriteLine(this.current_floor);
-					if (this.current_floor == FloorNumber) {
-						clearInterval(interval);
-						Console.WriteLine("Arrived at floor " + this.current_floor);
-						this.OpenDoor();
-					}
-				},
-				1000);
-
 				
+do
+{
+this.current_floor = this.current_floor + 1;
+					Console.WriteLine(this.current_floor);
+
+} while(this.current_floor < FloorNumber);
+				Console.WriteLine("Arrived at floor " + this.current_floor);
+						this.OpenDoor();
 			}
+				
 
 			public void addFloorToList(int floorNumber) {
 				this.floorList.Add(floorNumber);
